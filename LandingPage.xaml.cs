@@ -1,4 +1,4 @@
-namespace Pages;
+namespace MauiCRUDmyyrsepp;
 
 public partial class LandingPage : ContentPage
 {

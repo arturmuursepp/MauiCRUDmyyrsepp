@@ -1,7 +1,7 @@
 ﻿using SQLite;
 
 
-namespace MauiCRUD.Models
+namespace MauiCRUDmyyrsepp.Models
 {
     public class Employee
     {

@@ -1,10 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using MauiCRUD.Data;
-using MauiCRUD.Models;
+using MauiCRUDmyyrsepp.Data;
+using MauiCRUDmyyrsepp.Models;
 using System.Collections.ObjectModel;
 
-namespace MauiCRUD.ViewModels
+namespace MauiCRUDmyyrsepp.ViewModels
 {
     public partial class EmployeesViewModel : ObservableObject
     {

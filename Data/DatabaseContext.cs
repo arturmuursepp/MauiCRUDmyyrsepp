@@ -1,7 +1,7 @@
 ﻿using SQLite;
 using System.Linq.Expressions;
 
-namespace MauiCRUD.Data
+namespace MauiCRUDmyyrsepp.Data
 {
     public class DatabaseContext : IAsyncDisposable
     {
