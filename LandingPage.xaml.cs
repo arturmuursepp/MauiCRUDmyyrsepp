@@ -6,4 +6,8 @@ public partial class LandingPage : ContentPage
 	{
 		InitializeComponent();
 	}
+    private async void NavButtonClicked(object sender, EventArgs e)
+    {
+        await Navigation.PushAsync(new EmployeeList());
+    }
 }

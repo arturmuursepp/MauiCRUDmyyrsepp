@@ -14,7 +14,8 @@
             FontSize="64"
             Text="LANDING PAGE WELCOME"/>
             <Button
-            Text="CLICK"/>
+            Text="CLICK"
+            Clicked="NavButtonClicked"/>
         </VerticalStackLayout>
     </Grid>
 </ContentPage>

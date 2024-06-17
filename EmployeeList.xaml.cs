@@ -11,9 +11,9 @@ public partial class EmployeeList : ContentPage
 		//BindingContext = employeesViewModel;
 		//_employeesViewModel = employeesViewModel;
 	}
-    //protected async override void OnAppearing()
-    //{
-    //    base.OnAppearing();
-    //    await _employeesViewModel.LoadEmployeesAsync();
-    //}
+	//protected async override void onappearing()
+	//{
+	//    base.onappearing();
+	//    await _employeesviewmodel.loademployeesasync();
+	//}
 }
