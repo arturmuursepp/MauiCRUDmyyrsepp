@@ -1,19 +1,13 @@
-//using MauiCRUDmyyrsepp.ViewModels;
+using MauiCRUDmyyrsepp.ViewModels;
 
-namespace MauiCRUDmyyrsepp;
-
-public partial class EmployeeList : ContentPage
+namespace MauiCRUDmyyrsepp
 {
-	//private readonly EmployeesViewModel _employeesViewModel;
-	public EmployeeList()
-	{
-		InitializeComponent();
-		//BindingContext = employeesViewModel;
-		//_employeesViewModel = employeesViewModel;
-	}
-	//protected async override void onappearing()
-	//{
-	//    base.onappearing();
-	//    await _employeesviewmodel.loademployeesasync();
-	//}
+    public partial class EmployeeList : ContentPage
+    {
+        public EmployeeList()
+        {
+            InitializeComponent();
+            BindingContext = new EmployeesViewModel();
+        }
+    }
 }

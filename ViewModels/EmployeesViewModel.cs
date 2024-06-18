@@ -1,130 +1,118 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using MauiCRUDmyyrsepp.Data;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Windows.Input;
 using MauiCRUDmyyrsepp.Models;
-using System.Collections.ObjectModel;
+using SQLite;
 
 namespace MauiCRUDmyyrsepp.ViewModels
 {
-    public partial class EmployeesViewModel : ObservableObject
+    public class EmployeesViewModel : INotifyPropertyChanged
     {
-        private readonly DatabaseContext _context;
-
-        public EmployeesViewModel(DatabaseContext context)
-        {
-            _context = context;
-        }
-
-        [ObservableProperty]
-        private ObservableCollection<Employee> _employees = new();
-
-        [ObservableProperty]
-        private Employee _operatingEmployee = new();
-
-        [ObservableProperty]
+        private Employee _operatingEmployee;
+        private readonly SQLiteAsyncConnection _database;
         private bool _isBusy;
-
-        [ObservableProperty]
-        private string _busyText;
-
-        public async Task LoadEmployeesAsync()
+        public ObservableCollection<Employee> Employees { get; set; }
+        public Employee OperatingEmployee
         {
-            await ExecuteAsync(async () =>
-            {
-                var employees = await _context.GetAllAsync<Employee>();
-                if (employees is not null && employees.Any())
-                {
-                    Employees ??= new ObservableCollection<Employee>();
-
-                    foreach (var employee in employees)
-                    {
-                        Employees.Add(employee);
-                    }
-                }
-            }, "Fetching employees...");
+            get => _operatingEmployee;
+            set => SetProperty(ref _operatingEmployee, value);
         }
 
-        private async Task ExecuteAsync(Func<Task> operation, string? busyText = null)
+        public bool IsBusy
+        {
+            get => _isBusy;
+            set => SetProperty(ref _isBusy, value, nameof(IsBusy));
+        }
+
+        public string BusyText { get; set; }
+        public ICommand SaveEmployeeCommand { get; }
+        public ICommand SetOperatingEmployeeCommand { get; }
+        public ICommand DeleteEmployeeCommand { get; }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public EmployeesViewModel()
+        {
+            _database = InitializeDatabase();
+
+            Employees = new ObservableCollection<Employee>();
+            OperatingEmployee = new Employee();
+            BusyText = "Loading...";
+
+            SetOperatingEmployeeCommand = new Command<Employee>(SetOperatingEmployee);
+            SaveEmployeeCommand = new Command(async () => await SaveEmployee());
+            DeleteEmployeeCommand = new Command<int>(async (id) => await DeleteEmployee(id));
+
+            LoadEmployees();
+        }
+
+        private SQLiteAsyncConnection InitializeDatabase()
+        {
+            string dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Employees.db3");
+            var database = new SQLiteAsyncConnection(dbPath);
+            database.CreateTableAsync<Employee>().Wait();
+            return database;
+        }
+
+        private void SetOperatingEmployee(Employee employee)
+        {
+            OperatingEmployee = employee ?? new Employee();
+        }
+
+        private async Task SaveEmployee()
         {
             IsBusy = true;
-            BusyText = busyText ?? "Processing...";
-            try
+
+            if (OperatingEmployee.Id != 0)
             {
-                await operation?.Invoke();
+                await _database.UpdateAsync(OperatingEmployee);
             }
-            catch (Exception)
+            else
             {
-                throw;
+                await _database.InsertAsync(OperatingEmployee);
             }
-            finally
-            {
-                IsBusy = false;
-                BusyText = "Processing...";
-            }
+
+            OperatingEmployee = new Employee();
+            await LoadEmployees();
+
+            IsBusy = false;
         }
 
-        [ICommand]
-        private void SetOperatingEmployee(Employee? employee) => OperatingEmployee = employee ?? new();
-
-        [ICommand]
-        private async Task SaveEmployeeAsync()
+        private async Task DeleteEmployee(int employeeId)
         {
-            if (OperatingEmployee is null)
-                return;
-
-            var (isValid, errorMessage) = OperatingEmployee.Validate();
-            if (!isValid)
+            var employee = await _database.Table<Employee>().Where(p => p.Id == employeeId).FirstOrDefaultAsync();
+            if (employee != null)
             {
-                await Shell.Current.DisplayAlert("Validation Error", errorMessage, "Ok");
-                return;
+                await _database.DeleteAsync(employee);
+                await LoadEmployees();
+            }
+        }
+
+        private async Task LoadEmployees()
+        {
+            IsBusy = true;
+
+            var employees = await _database.Table<Employee>().ToListAsync();
+            Employees.Clear();
+            foreach (var employee in employees)
+            {
+                Employees.Add(employee);
             }
 
-            var busyText = OperatingEmployee.Id == 0 ? "Creating employee..." : "Updating employee...";
-            await ExecuteAsync(async () =>
-            {
-                if (OperatingEmployee.Id == 0)
-                {
-                    await _context.AddItemAsync<Employee>(OperatingEmployee);
-                    Employees.Add(OperatingEmployee);
-                }
-                else
-                {
-                    if (await _context.UpdateItemAsync<Employee>(OperatingEmployee))
-                    {
-                        var employeeCopy = OperatingEmployee.Clone();
-
-                        var index = Employees.IndexOf(OperatingEmployee);
-                        Employees.RemoveAt(index);
-
-                        Employees.Insert(index, employeeCopy);
-                    }
-                    else
-                    {
-                        await Shell.Current.DisplayAlert("Error", "Employee updating error", "Ok");
-                        return;
-                    }
-                }
-                SetOperatingEmployeeCommand.Execute(new());
-            }, busyText);
+            IsBusy = false;
         }
 
-        [ICommand]
-        private async Task DeleteEmployeeAsync(int id)
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
-            await ExecuteAsync(async () =>
-            {
-                if (await _context.DeleteItemByKeyAsync<Employee>(id))
-                {
-                    var employee = Employees.FirstOrDefault(e => e.Id == id);
-                    Employees.Remove(employee);
-                }
-                else
-                {
-                    await Shell.Current.DisplayAlert("Delete Error", "Employee was not deleted", "Ok");
-                }
-            }, "Deleting employee...");
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-
+        private void SetProperty<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
+        {
+            if (Equals(field, value)) return;
+            field = value;
+            OnPropertyChanged(propertyName);
+        }
     }
 }

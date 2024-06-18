@@ -1,12 +1,133 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:MauiCRUDmyyrsepp.ViewModels"
+             xmlns:models="clr-namespace:MauiCRUDmyyrsepp.Models"
+             x:DataType="vm:EmployeesViewModel"
              x:Class="MauiCRUDmyyrsepp.EmployeeList"
-             Title="EmployeeList">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             Title="Employees">
+    
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="{OnPlatform Default='+ Add Employee', iOS='+'}"
+                     Command="{Binding SetOperatingEmployeeCommand}"/>
+    </ContentPage.ToolbarItems>
+
+    <Grid RowDefinitions="Auto, *">
+        <VerticalStackLayout Grid.RowSpan="2"
+                             VerticalOptions="Center"
+                             HorizontalOptions="Center"
+                             IsVisible="{Binding IsBusy}">
+            <ActivityIndicator IsRunning="True"
+                               VerticalOptions="Center"
+                               HorizontalOptions="Center"/>
+            <Label Text="{Binding BusyText}"
+                   VerticalOptions="Center"
+                   HorizontalOptions="Center"/>
+        </VerticalStackLayout>
+
+        <Grid Grid.Row="1"
+              RowDefinitions="*, Auto">
+            <CollectionView Grid.Row="0"
+                            ItemsSource="{Binding Employees}">
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout ItemSpacing="5"
+                                       Orientation="Vertical"/>
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Employee">
+                        <Grid RowDefinitions="Auto, Auto, Auto"
+                              ColumnDefinitions="*, Auto"
+                              RowSpacing="3"
+                              Padding="4"
+                              BackgroundColor="Purple">
+                            <Label Text="{Binding Name}"
+                                   FontAttributes="Bold" />
+                            <Label
+                                   Grid.Row="1"
+                                   Text="{Binding Job}"
+                                   FontAttributes="Bold" />
+                            <Label Grid.Row="2"
+                                   Text="{Binding Salary, StringFormat='Salary: {0:C}'}"
+                                   FontAttributes="Bold"
+                                   FontSize="13"/>
+                            <Button Grid.Row="1"
+                                    Grid.Column="1"
+                                    Text="Delete"
+                                    TextColor="Grey"
+                                    FontSize="13"
+                                    HeightRequest="30"
+                                    CornerRadius="6"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:EmployeesViewModel}}, Path=DeleteEmployeeCommand}"
+                                    CommandParameter="{Binding Id}"/>
+                            <Button Grid.Column="1"
+                                    Text="Edit"
+                                    FontSize="13"
+                                    TextColor="Grey"
+                                    HeightRequest="30"
+                                    CornerRadius="6"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:EmployeesViewModel}}, Path=SetOperatingEmployeeCommand}"
+                                    CommandParameter="{Binding .}"/>
+
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+                <CollectionView.EmptyView>
+                    <ContentView>
+                        <VerticalStackLayout HorizontalOptions="Center"
+                                             VerticalOptions="Center">
+                            <Label Text="Create employee"/>
+                        </VerticalStackLayout>
+                    </ContentView>
+                </CollectionView.EmptyView>
+            </CollectionView>
+
+            <VerticalStackLayout Grid.Row="1">
+                <BoxView Color="Grey"
+                         HeightRequest="1" />
+                <Grid RowDefinitions="Auto, Auto"
+                      ColumnDefinitions="*, Auto"
+                      Padding="15"
+                      RowSpacing="15"
+                      ColumnSpacing="30"
+                      BackgroundColor="Purple">
+                    <VerticalStackLayout Grid.Row="0"
+                                         Grid.Column="0">
+                        <Label Text="Name" 
+                               TextColor="White"/>
+                        <Entry Text="{Binding OperatingEmployee.Name}"/>
+                        <Label Text="Job" 
+                               TextColor="White"/>
+                        <Entry Text="{Binding OperatingEmployee.Job}"/>
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Row="0"
+                                         Grid.Column="1">
+                        <Label Text="Salary"
+                               TextColor="White"/>
+                        <Entry Text="{Binding OperatingEmployee.Salary}"
+                               Margin="1"
+                               Keyboard="Numeric" />
+                    </VerticalStackLayout>
+
+                    <Button Grid.Row="1"
+                            Grid.ColumnSpan="2"
+                            Text="Update employee"
+                            TextColor="Grey"
+                            HorizontalOptions="Center"
+                            VerticalOptions="End"
+                            CornerRadius="8"
+                            BorderColor="Grey"
+                            Padding="50, 0"
+                            Command="{Binding SaveEmployeeCommand}">
+                        <Button.Triggers>
+                            <DataTrigger TargetType="Button"
+                                         Binding="{Binding OperatingEmployee.Id}"
+                                         Value="0">
+                                <Setter Property="Text" Value="Create employee" />
+                            </DataTrigger>
+                        </Button.Triggers>
+                    </Button>
+                </Grid>
+            </VerticalStackLayout>
+        </Grid>
+    </Grid>
 </ContentPage>
