@@ -2,7 +2,8 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MauiCRUDmyyrsepp.LandingPage"
-             Title="LandingPage">
+             Title="Landing Page"
+             BackgroundColor="DarkMagenta">
 
     <Grid>
         <VerticalStackLayout
@@ -12,10 +13,23 @@
             VerticalTextAlignment="Center"
             HorizontalTextAlignment="Center"
             FontSize="64"
-            Text="LANDING PAGE WELCOME"/>
+            Text="Welcome to MauiCRUDmyyrsepp Project"
+            Padding="20"/>
             <Button
-            Text="CLICK"
-            Clicked="NavButtonClicked"/>
+            BackgroundColor="Purple"
+            TextColor="White"
+            Text="Click here to go to EmployeeList"
+            FontSize="64"
+            Clicked="NavButtonClicked"
+            VerticalOptions="Center"
+            HorizontalOptions="Center"
+            Padding="10"
+            BorderColor="BlueViolet"
+            BorderWidth="5"/>
+            <Image
+                Margin="50"
+                Source="https://70f186a60af817fe0731-09dac41207c435675bfd529a14211b5c.ssl.cf1.rackcdn.com/assets/attachments_p/000/097/176/original_blobfishcroc_10x10_WEB.jpg"
+                WidthRequest="400"/>
         </VerticalStackLayout>
     </Grid>
 </ContentPage>

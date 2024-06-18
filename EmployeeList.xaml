@@ -5,7 +5,8 @@
              xmlns:models="clr-namespace:MauiCRUDmyyrsepp.Models"
              x:DataType="vm:EmployeesViewModel"
              x:Class="MauiCRUDmyyrsepp.EmployeeList"
-             Title="Employees">
+             Title="Employees"
+             BackgroundColor="Black">
     
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="{OnPlatform Default='+ Add Employee', iOS='+'}"
