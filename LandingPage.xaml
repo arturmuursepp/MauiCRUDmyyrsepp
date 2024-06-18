@@ -5,7 +5,7 @@
              Title="Landing Page"
              BackgroundColor="DarkMagenta">
 
-    <Grid>
+    <ScrollView>
         <VerticalStackLayout
             VerticalOptions="Start"
             HorizontalOptions="Center">
@@ -31,5 +31,5 @@
                 Source="https://70f186a60af817fe0731-09dac41207c435675bfd529a14211b5c.ssl.cf1.rackcdn.com/assets/attachments_p/000/097/176/original_blobfishcroc_10x10_WEB.jpg"
                 WidthRequest="400"/>
         </VerticalStackLayout>
-    </Grid>
+    </ScrollView>
 </ContentPage>
